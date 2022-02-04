@@ -53,7 +53,7 @@
         json.forEach((person) => {
           const klon = template.cloneNode(true);
           klon.querySelector("h2").textContent = person.fornavn;
-          klon.querySelector("h2").textContent += person.efternavn;
+          klon.querySelector("h2").textContent += " " + person.efternavn;
           klon.querySelector("p").textContent = person.email;
           klon.querySelector("img").src = "faces/" + person.profilbillede;
           section.appendChild(klon);
