@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      img {
+        width: 100%;
+      }
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+      article {
+        border: solid 2px orange;
+        border-radius: 10px;
+        padding: 10px;
+      }
+      .valgt {
+        background-color: red;
+      }
+      button {
+        margin: 15px 0 15px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Alle</h1>
+    <nav>
+      <button data-troende="alle" class="valgt">Alle</button>
+      <button data-troende="ja">Troende</button>
+      <button data-troende="nej">Ikke troende</button>
+      <button data-troende="tvivler">Tvivler</button>
+    </nav>
+
+    <section></section>
+    <template>
+      <article>
+        <img src="" alt="" />
+        <h2></h2>
+        <p></p>
+      </article>
+    </template>
+    <script>
+      const url = "https://tema7-2515.restdb.io/rest/medlemmer";
+      const options = {
+        headers: {
+          "x-apikey": "61fcf7ec3f215f310a37be6d",
+        },
+      };
+
+      let filter = "alle";
+      let data;
+      const h1 = document.querySelector("h1");
+
+      //fanger alle mine knapper
+      const filterKnapper = document.querySelectorAll("nav button");
+      console.log(filterKnapper);
+      //looper igennem en forEach og tilføjer en eventListner med et klik på alle mine knapper
+      filterKnapper.forEach((knap) =>
+        knap.addEventListener("click", filtrerPersoner)
+      );
+
+      // eventlistner knyttet til knapperne der vælger gvad for et filter der er aktivt
+      function filtrerPersoner() {
+        // sæt variabel "filter" til værdien af data-troende på den knap der er klikket på
+        filter = this.dataset.troende;
+
+        vis(data); //kald funktionen vis(data) efter det nye filter er sat på
+
+        h1.textContent = this.textContent;
+      }
+
+      async function hentData() {
+        const resspons = await fetch(url, options);
+        const json = await resspons.json();
+        data = json;
+        vis(data);
+      }
+
+      //container til articles med en person
+      const section = document.querySelector("section");
+      //tager fat i indholdet af html skabelon (article)
+      const template = document.querySelector("template").content;
+
+      //functionen der viser personer i liste view
+      function vis(json) {
+        console.log(json);
+        //ryd container inden ny loop
+        section.textContent = "";
+
+        json.forEach((person) => {
+          //loop igennem json
+          //tjek hvilken tro personen har og sammenlign med filter eller vis alle, hvis filter har værdien "alle"
+          if (filter == person.troende || filter == "alle") {
+            const klon = template.cloneNode(true);
+            klon.querySelector("h2").textContent = person.fornavn;
+            klon.querySelector("h2").textContent += " " + person.efternavn;
+            klon.querySelector("p").textContent = person.email;
+            klon.querySelector("img").src = "faces/" + person.profilbillede;
+            section.appendChild(klon);
+          }
+        });
+      }
+
+      hentData();
+    </script>
+  </body>
+</html>
